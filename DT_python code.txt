@@ -1,0 +1,154 @@
+##### Decision Tree ########################
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+import graphviz
+import os
+
+os.chdir("C:\\Users\\USER\\Desktop\\Python\\Class 10 Decision Tree_RForest")
+
+dataset = pd.read_csv("carseat.csv")
+dataset.iloc[0:1,]
+
+## converting object (character) to float (numeric)
+from sklearn import preprocessing
+le = preprocessing.LabelEncoder()
+
+dataset.ShelveLoc = le.fit_transform(dataset.ShelveLoc)
+dataset.ShelveLoc.unique()#dep variable
+
+dataset.Urban = le.fit_transform(dataset.Urban)
+dataset.US = le.fit_transform(dataset.US)
+
+dataset.ShelveLoc = le.fit_transform(dataset.ShelveLoc)
+
+
+
+#pd.set_option('display.max_columns', None)#show all columns
+
+
+
+
+#####
+
+dataset.shape#150 rows and 5 columns
+dataset.high.unique()#dep variable
+
+
+X = dataset.drop('high', axis=1)
+Y = dataset['high']
+
+
+
+## gini index method
+# split the dataset into 70% training and 30% testing
+import random
+random.seed(100)
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.30,random_state=0)
+
+len(X_train)#X is all ind variables
+len(X_test)#X is all ind variables
+
+len(y_train)# y is dep variable
+len(y_test)# y is dep variable
+
+
+from sklearn.tree import DecisionTreeClassifier
+classifier = DecisionTreeClassifier(random_state=0)#gini default
+classifier.fit(X_train, y_train)
+
+#predict the test data
+y_pred = classifier.predict(X_test)
+
+
+# validation of the model
+from sklearn.metrics import classification_report, confusion_matrix
+print(confusion_matrix(y_test, y_pred))
+print(classification_report(y_test, y_pred))
+
+
+# Load libraries
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
+from sklearn.model_selection import train_test_split # Import train_test_split function
+from sklearn import metrics #Import scikit-learn metrics module for accuracy calculation
+
+print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+
+#sensitivity=recall
+#specificity = precision
+#f1 score ranges from 0 - 1; closer to 1 better the model
+#f1 score = 2*((precision*recall)/(precision+recall))
+
+#pruning
+####
+
+no_of_folds = [2, 3, 4, 5, 6,7,8,9] 
+  
+for max_depths in no_of_folds: 
+
+  classifier = DecisionTreeClassifier(max_depth=max_depths)
+  classifier.fit(X_train, y_train)
+
+  y_pred = classifier.predict(X_test)
+
+
+  from sklearn.metrics import classification_report, confusion_matrix
+  #print(confusion_matrix(y_test, y_pred))
+  #print(classification_report(y_test, y_pred))
+  acc = metrics.accuracy_score(y_test, y_pred)
+  print("For max depth of ", max_depths, " accuracy is ", acc)
+
+
+## use the max_depth option to prune
+from sklearn.tree import DecisionTreeClassifier
+classifier = DecisionTreeClassifier(max_depth=3,random_state=0)#entropy method
+classifier.fit(X_train, y_train)
+#predict the test data
+y_pred = classifier.predict(X_test)
+
+# validation of the model
+from sklearn.metrics import classification_report, confusion_matrix
+print(confusion_matrix(y_test, y_pred))
+print(classification_report(y_test, y_pred))
+# Load libraries
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
+from sklearn.model_selection import train_test_split # Import train_test_split function
+from sklearn import metrics #Import scikit-learn metrics module for accuracy calculation
+print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+
+
+#importance of the variable
+importances  = classifier.feature_importances_#read in same order as X
+
+a = pd.DataFrame(list(zip(X.columns, importances)))
+
+a.columns = ["a","b"]#rename the columns
+a.sort_values(["b"],ascending=False)
+
+
+#remove varialbe with lesser importance
+
+new_X_train = X_train.iloc[:,[5,4,6,1,2]]#del sepal_length
+new_X_train.iloc[0:1,]
+
+new_X_test = X_test.iloc[:,[5,4,6,1,2]]#del sepal_length
+new_X_test.iloc[0:1,]
+
+#run with new dataset
+## use the max_depth option to prune
+classifier = DecisionTreeClassifier(random_state=0,max_depth=3)#entropy method
+classifier.fit(new_X_train, y_train)
+#predict the test data
+y_pred = classifier.predict(new_X_test)
+
+# validation of the model
+print(confusion_matrix(y_test, y_pred))
+print(classification_report(y_test, y_pred))
+# Load libraries
+print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
